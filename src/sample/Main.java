@@ -3,6 +3,10 @@ package sample;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -13,16 +17,30 @@ public class Main extends Application {
 
     public void start(Stage primaryStage){
         window = primaryStage;
+        HBox mainLayout = new HBox(10);
+        VBox btnLayout = new VBox(10);
+        Button scale = new Button("Scale");
+        TextField zoomTF = new TextField();
+        GraphicView graphic = new GraphicView();
+        graphic.setTable();
         Group root = new Group();
         grafHeight = 350.0;
         grafWidth = 350.0;
         drawClass drw = new drawClass(grafHeight, grafWidth);
         drw.setAxisis();
-        drw.setGraphic();
-        root.getChildren().addAll(drw.getLayer1(), drw.getLayer2());
-        drw.getLayer1().toFront();
+        drw.setGraphic(graphic.getTable(), 1.0);
+        drw.setGrid();
+        root.getChildren().addAll(drw.getAxisis(), drw.getGraphic(), drw.getGrid());
+        btnLayout.getChildren().addAll(scale, zoomTF);
+        drw.getAxisis().toFront();
+        drw.getGrid().toBack();
+        scale.setOnAction(e -> {
+            drw.setScale(Double.parseDouble(zoomTF.getText()));
+            drw.zoom(graphic.getTable());
+        });
+        mainLayout.getChildren().addAll(root, btnLayout);
         window.setTitle("Begin to draw");
-        window.setScene(new Scene(root, 800, 600));
+        window.setScene(new Scene(mainLayout, 800, 600));
         window.show();
     }
 

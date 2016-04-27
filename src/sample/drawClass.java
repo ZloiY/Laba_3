@@ -2,6 +2,7 @@ package sample;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.TableView;
 import javafx.scene.paint.Color;
 
 /**
@@ -11,68 +12,130 @@ public class drawClass {
 
     private Double lengthOY;
     private Double lengthOX;
-    private Double indent;
-    private GraphicsContext gc1;
-    private Canvas layer1;
-    private Canvas layer2;
+    private Double offset;
+    private Canvas axisis;
+    private Canvas graphic;
+    private Canvas grid;
     private GraphicsContext gc2;
+    private GraphicsContext gc1;
+    private GraphicsContext gcGrid;
+    private Double scale;
     Double wndHeight;
     Double wndWidth;
+
+    public Double getScale() {
+        return scale;
+    }
+
+    public void setScale(Double scale) {
+        this.scale = scale;
+    }
+
+
 
     drawClass(Double height, Double width){
         wndHeight = height;
         wndWidth = width;
-        layer1 = new Canvas(wndWidth, wndHeight);
-        layer2 = new Canvas(wndWidth, wndHeight);
-        gc1 = layer1.getGraphicsContext2D();
-        gc2 = layer2.getGraphicsContext2D();
+        axisis = new Canvas(wndWidth, wndHeight);
+        graphic = new Canvas(wndWidth, wndHeight);
+        gc1 = axisis.getGraphicsContext2D();
+        gc2 = graphic.getGraphicsContext2D();
+        scale = 1.0;
     }
 
-    public Canvas getLayer1() {
-        return layer1;
+    public Canvas getAxisis() {
+        return axisis;
     }
 
-    public Canvas getLayer2() {
-        return layer2;
+    public Canvas getGraphic() {
+        return graphic;
+    }
+
+    public Canvas getGrid() {
+        return grid;
     }
 
     public void setAxisis(){
         gc1.setStroke(Color.BLACK);
         gc1.setLineWidth(3);
-        indent = 45.0;
-        gc1.strokeLine(indent, indent, indent, wndHeight - indent);
-        gc1.strokeLine(indent, wndHeight - indent, wndWidth - indent, wndHeight - indent);
-        gc1.strokeLine(indent, indent, indent - 10, indent + 20);
-        gc1.strokeLine(indent, indent, indent + 10, indent + 20);
-        gc1.strokeLine(wndWidth - indent, wndHeight - indent, wndWidth - indent - 20, wndHeight - indent - 10);
-        gc1.strokeLine(wndWidth - indent, wndHeight - indent, wndWidth - indent - 20, wndHeight - indent + 10);
-        lengthOY = wndHeight -2*indent;
-        lengthOX = wndWidth -2*indent;
+        offset = 45.0;
+        gc1.strokeLine(offset, offset, offset, wndHeight - offset);
+        gc1.strokeLine(offset, wndHeight - offset, wndWidth - offset, wndHeight - offset);
+        gc1.strokeLine(offset, offset, offset - 10, offset + 20);
+        gc1.strokeLine(offset, offset, offset + 10, offset + 20);
+        gc1.strokeLine(wndWidth - offset, wndHeight - offset, wndWidth - offset - 20, wndHeight - offset - 10);
+        gc1.strokeLine(wndWidth - offset, wndHeight - offset, wndWidth - offset - 20, wndHeight - offset + 10);
+        lengthOY = wndHeight -2* offset;
+        lengthOX = wndWidth -2* offset;
         Double range = 30.0;
         gc1.setLineWidth(1);
-        gc1.strokeText("0.0", indent - 20, wndHeight - indent + 20);
+        gc1.strokeText("0.0", offset - 20, wndHeight - offset + 20);
         for (double strokesOY = 1.0; strokesOY < lengthOY/range; strokesOY++){
             gc1.setLineWidth(3);
-            gc1.strokeLine(indent - 10, wndHeight - range * strokesOY - indent, indent + 10, wndHeight - range * strokesOY - indent);
+            gc1.strokeLine(offset - 10, wndHeight - range * strokesOY - offset, offset + 10, wndHeight - range * strokesOY - offset);
             Double cordinates = range*strokesOY;
             gc1.setLineWidth(1);
-            gc1.strokeText(cordinates.toString(), 1, wndHeight - indent - range * strokesOY + 5);
+            gc1.strokeText(cordinates.toString(), 1, wndHeight - offset - range * strokesOY + 5);
         }
         for (double strokesOX = 1.0; strokesOX < lengthOX/range; strokesOX++){
             gc1.setLineWidth(3);
-            gc1.strokeLine(range * strokesOX + indent, wndHeight - indent - 10, range * strokesOX + indent, wndHeight - indent + 10);
+            gc1.strokeLine(range * strokesOX + offset, wndHeight - offset - 10, range * strokesOX + offset, wndHeight - offset + 10);
             Double cordiantes = range*strokesOX;
             gc1.setLineWidth(1);
-            gc1.strokeText(cordiantes.toString(), range * strokesOX - 10 + indent, wndHeight - 5);
+            gc1.strokeText(cordiantes.toString(), range * strokesOX - 10 + offset, wndHeight - 5);
         }
     }
 
-    public void setGraphic(){
+    public void setGrid(){
+        grid = new Canvas(wndWidth, wndHeight);
+        grid.setMouseTransparent(true);
+        gcGrid = grid.getGraphicsContext2D();
+        gcGrid.setStroke(Color.LIGHTGREY);
+        gcGrid.setLineWidth(1);
+        Double range = 30.0;
+        for (double line = 1.0; line < lengthOX/range; line++){
+            gcGrid.strokeLine(range *line +offset, wndHeight -offset, range *line +offset, offset);
+        }
+        for(double line = 1.0; line < lengthOY/range; line++){
+            gcGrid.strokeLine(offset, wndHeight -range *line -offset, wndWidth -offset, wndHeight -range *line -offset);
+        }
+    }
+
+    public void setGraphic(TableView<GraphicData> table, Double scale){
         gc2.setStroke(Color.DARKGREEN);
         gc2.setLineWidth(5);
-        gc2.strokeLine(indent, wndHeight - indent, 80, wndHeight - 150);
-        gc2.strokeLine(80, wndHeight - 150, 180, wndHeight - 230);
-        gc2.strokeLine(180, wndHeight - 230, lengthOX, wndHeight - lengthOY);
+        for (int index = 1; index < table.getItems().size(); index++){
+            if (table.getItems().get(index).getY()*scale +offset *(scale -1) -offset > lengthOY){
+                gc2.strokeLine(table.getItems().get(index-1).getX() *scale -offset *(scale -1) +offset,
+                        wndHeight -table.getItems().get(index-1).getY() *scale +offset *(scale -1) -offset,
+                        table.getItems().get(index).getX() *scale -offset *(scale -1) +offset,
+                        lengthOY);
+            }else {
+                if (table.getItems().get(index).getX() *scale +offset *(scale -1) -offset > lengthOX) {
+                    gc2.strokeLine(table.getItems().get(index - 1).getX() * scale - offset * (scale - 1) + offset,
+                            wndHeight - table.getItems().get(index - 1).getY() * scale + offset * (scale - 1) - offset,
+                            lengthOX,
+                            wndHeight - table.getItems().get(index).getY() * scale + offset * (scale - 1) - offset);
+                }
+            }
+            if (table.getItems().get(index).getX() *scale +offset *(scale -1) -offset > lengthOX
+                    && table.getItems().get(index).getY() *scale +offset *(scale -1) -offset > lengthOY){
+                gc2.strokeLine(table.getItems().get(index-1).getX() *scale -offset *(scale -1) +offset,
+                        wndHeight -table.getItems().get(index-1).getY() *scale +offset *(scale -1) -offset,
+                        lengthOX,
+                        lengthOY);
+            }else{
+                gc2.strokeLine(table.getItems().get(index - 1).getX() * scale - offset * (scale - 1) + offset,
+                        wndHeight - table.getItems().get(index - 1).getY() * scale + offset * (scale - 1) - offset,
+                        table.getItems().get(index).getX() * scale - offset * (scale - 1) + offset,
+                        wndHeight - table.getItems().get(index).getY() * scale + offset * (scale - 1) - offset);
+            }
+        }
+    }
+
+    public void zoom(TableView<GraphicData> table){
+        gc2.clearRect(0, 0, wndHeight, wndWidth);
+        setGraphic(table, scale);
     }
 
 }
