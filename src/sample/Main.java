@@ -27,10 +27,10 @@ public class Main extends Application {
         grafHeight = 350.0;
         grafWidth = 350.0;
         GraphicDraw drw = new GraphicDraw(grafHeight, grafWidth);
-        drw.setAxisis();
-        drw.setGraphic(graphic.getTable(), 1.0);
+        drw.setScale(1.0);
+        drw.setAxisis(graphic.getTable());
         drw.setGrid();
-        root.getChildren().addAll(drw.getAxisis(), drw.getGraphic(), drw.getGrid());
+        root.getChildren().addAll(drw.getAxisis(), drw.getGraphic(), drw.getGrid(), drw.getCordinates());
         btnLayout.getChildren().addAll(scale, zoomTF);
         drw.getAxisis().toFront();
         drw.getGrid().toBack();
