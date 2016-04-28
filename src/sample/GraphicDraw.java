@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
 /**
  * Created by ZloiY on 26.04.2016.
  */
-public class drawClass {
+public class GraphicDraw {
 
     private Double lengthOY;
     private Double lengthOX;
@@ -33,7 +33,7 @@ public class drawClass {
 
 
 
-    drawClass(Double height, Double width){
+    GraphicDraw(Double height, Double width){
         wndHeight = height;
         wndWidth = width;
         axisis = new Canvas(wndWidth, wndHeight);
@@ -57,6 +57,7 @@ public class drawClass {
 
     public void setAxisis(){
         gc1.setStroke(Color.BLACK);
+        gc1.setFill(Color.WHITESMOKE);
         gc1.setLineWidth(3);
         offset = 45.0;
         gc1.strokeLine(offset, offset, offset, wndHeight - offset);
@@ -67,6 +68,8 @@ public class drawClass {
         gc1.strokeLine(wndWidth - offset, wndHeight - offset, wndWidth - offset - 20, wndHeight - offset + 10);
         lengthOY = wndHeight -2* offset;
         lengthOX = wndWidth -2* offset;
+        gc1.fillRect(0, 0, wndWidth, offset);
+        gc2.fillRect(wndWidth, 0, offset, wndHeight);
         Double range = 30.0;
         gc1.setLineWidth(1);
         gc1.strokeText("0.0", offset - 20, wndHeight - offset + 20);
@@ -105,31 +108,10 @@ public class drawClass {
         gc2.setStroke(Color.DARKGREEN);
         gc2.setLineWidth(5);
         for (int index = 1; index < table.getItems().size(); index++){
-            if (table.getItems().get(index).getY()*scale +offset *(scale -1) -offset > lengthOY){
-                gc2.strokeLine(table.getItems().get(index-1).getX() *scale -offset *(scale -1) +offset,
-                        wndHeight -table.getItems().get(index-1).getY() *scale +offset *(scale -1) -offset,
-                        table.getItems().get(index).getX() *scale -offset *(scale -1) +offset,
-                        lengthOY);
-            }else {
-                if (table.getItems().get(index).getX() *scale +offset *(scale -1) -offset > lengthOX) {
-                    gc2.strokeLine(table.getItems().get(index - 1).getX() * scale - offset * (scale - 1) + offset,
-                            wndHeight - table.getItems().get(index - 1).getY() * scale + offset * (scale - 1) - offset,
-                            lengthOX,
-                            wndHeight - table.getItems().get(index).getY() * scale + offset * (scale - 1) - offset);
-                }
-            }
-            if (table.getItems().get(index).getX() *scale +offset *(scale -1) -offset > lengthOX
-                    && table.getItems().get(index).getY() *scale +offset *(scale -1) -offset > lengthOY){
-                gc2.strokeLine(table.getItems().get(index-1).getX() *scale -offset *(scale -1) +offset,
-                        wndHeight -table.getItems().get(index-1).getY() *scale +offset *(scale -1) -offset,
-                        lengthOX,
-                        lengthOY);
-            }else{
-                gc2.strokeLine(table.getItems().get(index - 1).getX() * scale - offset * (scale - 1) + offset,
-                        wndHeight - table.getItems().get(index - 1).getY() * scale + offset * (scale - 1) - offset,
-                        table.getItems().get(index).getX() * scale - offset * (scale - 1) + offset,
-                        wndHeight - table.getItems().get(index).getY() * scale + offset * (scale - 1) - offset);
-            }
+            gc2.strokeLine(table.getItems().get(index - 1).getX() * scale - offset * (scale - 1) + offset,
+               wndHeight - table.getItems().get(index - 1).getY() * scale + offset * (scale - 1) - offset,
+               table.getItems().get(index).getX() * scale - offset * (scale - 1) + offset,
+               wndHeight - table.getItems().get(index).getY() * scale + offset * (scale - 1) - offset);
         }
     }
 

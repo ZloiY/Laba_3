@@ -26,7 +26,7 @@ public class Main extends Application {
         Group root = new Group();
         grafHeight = 350.0;
         grafWidth = 350.0;
-        drawClass drw = new drawClass(grafHeight, grafWidth);
+        GraphicDraw drw = new GraphicDraw(grafHeight, grafWidth);
         drw.setAxisis();
         drw.setGraphic(graphic.getTable(), 1.0);
         drw.setGrid();
