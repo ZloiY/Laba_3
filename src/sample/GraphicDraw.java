@@ -17,14 +17,18 @@ public class GraphicDraw {
     private Canvas graphic;
     private Canvas grid;
     private Canvas cordinates;
-    private GraphicsContext gc2;
-    private GraphicsContext gc1;
+    private GraphicsContext gcGraphic;
+    private GraphicsContext gcAxisis;
     private GraphicsContext gcGrid;
     private GraphicsContext gcCordinates;
     private Double scale;
+    Double deltaX;
+    Double deltaY;
+    Double step;
     Double wndHeight;
     Double wndWidth;
-    Double range;
+    Double rangeOX;
+    Double rangeOY;
 
     public Double getScale() {
         return scale;
@@ -34,16 +38,16 @@ public class GraphicDraw {
         this.scale = scale;
     }
 
-
-
     GraphicDraw(Double height, Double width){
         wndHeight = height;
         wndWidth = width;
+        deltaX =0.0;
+        deltaY =0.0;
         axisis = new Canvas(wndWidth, wndHeight);
         graphic = new Canvas(wndWidth, wndHeight);
         cordinates = new Canvas(wndWidth, wndHeight);
-        gc1 = axisis.getGraphicsContext2D();
-        gc2 = graphic.getGraphicsContext2D();
+        gcAxisis = axisis.getGraphicsContext2D();
+        gcGraphic = graphic.getGraphicsContext2D();
         gcCordinates = cordinates.getGraphicsContext2D();
         grid = new Canvas(wndWidth, wndHeight);
         grid.setMouseTransparent(true);
@@ -70,116 +74,107 @@ public class GraphicDraw {
     }
 
     public void setAxisis(TableView<GraphicData> table){
-        gc1.setStroke(Color.BLACK);
-        gc1.setFill(Color.WHITESMOKE);
-        gc1.setLineWidth(3);
+        gcAxisis.setStroke(Color.BLACK);
+        gcAxisis.setFill(Color.WHITESMOKE);
+        gcAxisis.setLineWidth(3);
         offset = 45.0;
-        gc1.strokeLine(offset, offset, offset, wndHeight - offset);
-        gc1.strokeLine(offset, wndHeight - offset, wndWidth - offset, wndHeight - offset);
-        gc1.strokeLine(offset, offset, offset - 10, offset + 20);
-        gc1.strokeLine(offset, offset, offset + 10, offset + 20);
-        gc1.strokeLine(wndWidth - offset, wndHeight - offset, wndWidth - offset - 20, wndHeight - offset - 10);
-        gc1.strokeLine(wndWidth - offset, wndHeight - offset, wndWidth - offset - 20, wndHeight - offset + 10);
+        gcAxisis.strokeLine(offset, offset, offset, wndHeight - offset);
+        gcAxisis.strokeLine(offset, wndHeight - offset, wndWidth - offset, wndHeight - offset);
+        gcAxisis.strokeLine(offset, offset, offset - 10, offset + 20);
+        gcAxisis.strokeLine(offset, offset, offset + 10, offset + 20);
+        gcAxisis.strokeLine(wndWidth - offset, wndHeight - offset, wndWidth - offset - 20, wndHeight - offset - 10);
+        gcAxisis.strokeLine(wndWidth - offset, wndHeight - offset, wndWidth - offset - 20, wndHeight - offset + 10);
         lengthOY = wndHeight -2* offset -50;
         lengthOX = wndWidth -2* offset -50;
-        gc1.fillRect(0, 0, wndWidth, offset);
-        gc2.fillRect(wndWidth, 0, offset, wndHeight);
-        gc1.setLineWidth(1);
-        gc1.strokeText("0.0", offset - 20, wndHeight - offset + 20);
-        setGraphic(table, scale);
-        for (double strokesOY = 1.0; strokesOY < lengthOY/range; strokesOY++){
-            gc1.setLineWidth(3);
-            gc1.strokeLine(offset - 10, wndHeight - range * strokesOY - offset, offset + 10, wndHeight - range * strokesOY - offset);
+        gcAxisis.fillRect(0, 0, wndWidth, offset);
+        gcGraphic.fillRect(wndWidth, 0, offset, wndHeight);
+        gcAxisis.setLineWidth(1);
+        if(scale == 1.0){
+            step = 20.0;
+        }else{
+            if (lengthOX/rangeOX/scale < 20.0){
+                step = 20.0 +lengthOX/rangeOX/scale;
+            }
         }
-        for (double strokesOX = 1.0; strokesOX < lengthOX/range; strokesOX++){
-            gc1.setLineWidth(3);
-            gc1.strokeLine(range * strokesOX + offset, wndHeight - offset - 10, range * strokesOX + offset, wndHeight - offset + 10);
+        setGraphic(table, scale);
+        for (double strokesOY = 0.0; strokesOY < lengthOY/rangeOY; strokesOY++){
+            gcAxisis.setLineWidth(3);
+            gcAxisis.strokeLine(offset - 10 -deltaX, wndHeight - rangeOY * strokesOY - offset, offset + 10 -deltaX, wndHeight - rangeOY * strokesOY - offset);
+        }
+        for (double strokesOX = 0.0; strokesOX < lengthOX/rangeOX; strokesOX++){
+            gcAxisis.setLineWidth(3);
+            gcAxisis.strokeLine(rangeOX * strokesOX + offset, wndHeight - offset - 10 - deltaY, rangeOX * strokesOX + offset, wndHeight - offset + 10 - deltaY);
         }
     }
 
     public void setGrid(){
-        for (double line = 1.0; line < (lengthOX+50)/range; line++){
-            gcGrid.strokeLine(range *line +offset, wndHeight -offset, range *line +offset, offset);
+        for (double line = 0.0; line < (lengthOX+50)/rangeOX; line++){
+            gcGrid.strokeLine(rangeOX *line +offset -deltaX, wndHeight -offset, rangeOX *line +offset -deltaX, offset);
         }
-        for(double line = 1.0; line < (lengthOY+50)/range; line++){
-            gcGrid.strokeLine(offset, wndHeight -range *line -offset, wndWidth -offset, wndHeight -range *line -offset);
+        for(double line = 0.0; line < (lengthOY+50)/rangeOY; line++){
+            gcGrid.strokeLine(offset, wndHeight -rangeOY *line -offset -deltaY, wndWidth -offset, wndHeight -rangeOY *line -offset -deltaY);
         }
     }
 
     public void setGraphic(TableView<GraphicData> table, Double scale){
-        gc2.setStroke(Color.DARKGREEN);
-        gc2.setLineWidth(5);
+        gcGraphic.setStroke(Color.DARKGREEN);
+        gcGraphic.setLineWidth(5);
         for (int index = 1; index < table.getItems().size(); index++){
-            gc2.strokeLine(table.getItems().get(index - 1).getX() * scale - offset * (scale - 1) + offset,
-               wndHeight - table.getItems().get(index - 1).getY() * scale + offset * (scale - 1) - offset,
-               table.getItems().get(index).getX() * scale - offset * (scale - 1) + offset,
-               wndHeight - table.getItems().get(index).getY() * scale + offset * (scale - 1) - offset);
+            gcGraphic.strokeLine(table.getItems().get(index - 1).getX() * scale + offset +deltaX,
+                    wndHeight - table.getItems().get(index - 1).getY() * scale - offset +deltaY,
+                    table.getItems().get(index).getX() * scale + offset +deltaX,
+                    wndHeight - table.getItems().get(index).getY() * scale - offset +deltaY);
         }
         setCordinates(table);
     }
 
     public void zoom(TableView<GraphicData> table){
-        gc2.clearRect(0, 0, wndHeight, wndWidth);
+        gcGraphic.clearRect(0, 0, wndHeight, wndWidth);
         setGraphic(table, scale);
         gcCordinates.clearRect(0, 0, wndWidth, wndHeight);
+        gcAxisis.clearRect(0, 0, wndWidth, wndHeight);
+        gcGrid.clearRect(0, 0, wndWidth, wndHeight);
         setAxisis(table);
     }
 
     public void setCordinates(TableView<GraphicData> table){
         int lastElem = table.getItems().size() -1;
-        Double oY;
-        Double oX;
-        boolean outOfBoundsOY;
-        boolean outOfBoundsOX;
-        if (table.getItems().get(lastElem).getY() < lengthOY/scale){
-            oY = (table.getItems().get(0).getY()/scale + table.getItems().get(lastElem).getY()/scale)/5*scale;
-            outOfBoundsOY = false;
-        }else{
-            oY = (table.getItems().get(0).getY()/scale + lengthOY/scale)/5*scale;
-            outOfBoundsOY = true;
-        }
-        if (table.getItems().get(lastElem).getX() < lengthOX/scale){
-            oX = (table.getItems().get(0).getX()/scale + table.getItems().get(lastElem).getX()/scale)/5*scale;
-            outOfBoundsOX = false;
-        }else{
-            oX = (table.getItems().get(0).getX()/scale + lengthOX/scale)/5*scale;
-            outOfBoundsOX = true;
-        }
-        setRange(oY, oX, outOfBoundsOX, outOfBoundsOY, lastElem, table);
+        setRange(table, lastElem);
         setGrid();
-
-        for (double strokesOY = 1.0; strokesOY < lengthOY/range; strokesOY++){
+        Double tempOY = 0.0;
+        Double tempOX = 0.0;
+        for (double strokesOY = 0.0; strokesOY < lengthOY/rangeOY; strokesOY++){
             gcCordinates.setLineWidth(1);
-            Double tempOY = oY *strokesOY;
-            tempOY = Math.floor(tempOY *100)/100;
-            gcCordinates.strokeText(tempOY.toString(), 1, wndHeight - offset - range * strokesOY + 5);
+            tempOY = (rangeOY *strokesOY)/scale;
+            gcCordinates.strokeText(String.valueOf(tempOY.intValue()), 1 +deltaX, wndHeight - offset - rangeOY * strokesOY + 5);
         }
-        for (double strokesOX = 1.0; strokesOX < lengthOX/range; strokesOX++){
+        for (double strokesOX =0.0; strokesOX < lengthOX/rangeOX; strokesOX++){
             gcCordinates.setLineWidth(1);
-            Double tempOX = oX *strokesOX;
-            tempOX = Math.floor(tempOX *100)/100;
-            gcCordinates.strokeText(tempOX.toString(), range * strokesOX - 10 + offset, wndHeight - 5);
+            tempOX = (rangeOX *strokesOX)/scale;
+            gcCordinates.strokeText(String.valueOf(tempOX.intValue()), rangeOX * strokesOX - 10 + offset, wndHeight - 5 +deltaY);
         }
 
     }
 
-    public void setRange(Double avrOY, Double avrOX, Boolean outOfBoundsOX, Boolean outOfBoundsOY,
-                         Integer lastElement, TableView<GraphicData> table){
-        if (outOfBoundsOX){
-            Double quantity = lengthOX/avrOX;
-            range = lengthOX/quantity;
+    public void setRange(TableView<GraphicData> table, Integer lastElem){
+        if (table.getItems().get(lastElem).getY() < lengthOY/scale){
+            rangeOY = (table.getItems().get(0).getY()+deltaY/scale + table.getItems().get(lastElem).getY()/scale)/5*scale;
         }else{
-            Double quantity = table.getItems().get(lastElement).getX()/avrOX;
-            range = lengthOX/quantity;
+            rangeOY = (table.getItems().get(0).getY()/scale + lengthOY/scale)/5*scale;
         }
 
-        if (outOfBoundsOY){
-            Double quantity = lengthOY/avrOY;
-            range = lengthOY/quantity;
+        if (table.getItems().get(lastElem).getX() < lengthOX/scale){
+            rangeOX = (table.getItems().get(0).getX()/scale + table.getItems().get(lastElem).getX()/scale)/5*scale;
         }else{
-            Double quantity = table.getItems().get(lastElement).getY()/avrOY;
-            range = lengthOY/quantity;
+            rangeOX = (table.getItems().get(0).getX()/scale + lengthOX/scale)/5*scale;
         }
+
+    }
+
+    public void setDelta(Double deltaX, Double deltaY, TableView<GraphicData> table){
+        deltaX = this.deltaX;
+        deltaY = this.deltaY;
+        setAxisis(table);
     }
 
 }
