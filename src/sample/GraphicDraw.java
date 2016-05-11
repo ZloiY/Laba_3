@@ -99,7 +99,7 @@ public class GraphicDraw {
         setGraphic(table, scale);
         for (double strokesOY = 0.0; strokesOY < (lengthOY+deltaY)/rangeOY*scale; strokesOY++){
             gcAxisis.setLineWidth(3);
-            gcAxisis.strokeLine(offset - 10, wndHeight - rangeOY * strokesOY/scale - offset +deltaY, offset + 10, wndHeight - rangeOY * strokesOY/scale - offset +deltaY);
+            gcAxisis.strokeLine(offset - 10, wndHeight - rangeOY *strokesOY/scale - offset +deltaY, offset + 10, wndHeight - rangeOY *strokesOY/scale - offset +deltaY);
         }
         for (double strokesOX = 0.0; strokesOX < (lengthOX+Math.abs(deltaX))/rangeOX*scale; strokesOX++){
             gcAxisis.setLineWidth(3);
@@ -118,7 +118,8 @@ public class GraphicDraw {
 
     public void setGraphic(TableView<GraphicData> table, Double scale){
         gcGraphic.setStroke(Color.DARKGREEN);
-        gcGraphic.setLineWidth(5);
+        gcGraphic.setFill(Color.GREEN);
+        gcGraphic.setLineWidth(3);
         for (int index = 1; index < table.getItems().size(); index++){
             gcGraphic.strokeLine(table.getItems().get(index - 1).getX() * scale + offset +deltaX,
                     wndHeight - table.getItems().get(index - 1).getY() * scale - offset +deltaY,
@@ -146,7 +147,7 @@ public class GraphicDraw {
         for (double strokesOY = 0.0; strokesOY < (lengthOY+deltaY)/rangeOY*scale; strokesOY++){
             gcCordinates.setLineWidth(1);
             tempOY = ((rangeOY) *strokesOY)/scale/scale;
-            gcCordinates.strokeText(String.valueOf(tempOY.intValue()), 1 , wndHeight - offset - rangeOY * strokesOY /scale+ 5+deltaY);
+            gcCordinates.strokeText(String.valueOf(tempOY.intValue()), 1 , wndHeight -offset -rangeOY *strokesOY/scale+5+deltaY);
         }
         for (double strokesOX =0.0; strokesOX < (lengthOX+Math.abs(deltaX))/rangeOX*scale; strokesOX++){
             gcCordinates.setLineWidth(1);
@@ -158,15 +159,15 @@ public class GraphicDraw {
 
     public void setRange(TableView<GraphicData> table, Integer lastElem){
         if (table.getItems().get(lastElem).getY() < lengthOY/scale){
-            rangeOY = (table.getItems().get(0).getY()+deltaY/scale + table.getItems().get(lastElem).getY()/scale)*scale*5;
+            rangeOY = (table.getItems().get(0).getY()/scale + table.getItems().get(lastElem).getY()/scale)*scale*10;
         }else{
-            rangeOY = (table.getItems().get(0).getY()/scale + lengthOY/scale)*scale*5;
+            rangeOY = (table.getItems().get(0).getY()/scale + lengthOY/scale)*scale*10;
         }
 
         if (table.getItems().get(lastElem).getX() < lengthOX/scale){
-            rangeOX = (table.getItems().get(0).getX()/scale + table.getItems().get(lastElem).getX()/scale)*scale;
+            rangeOX = (table.getItems().get(0).getX()/scale + table.getItems().get(lastElem).getX()/scale)*10*scale;
         }else{
-            rangeOX = (table.getItems().get(0).getX()/scale + lengthOX/scale)*scale;
+            rangeOX = (table.getItems().get(0).getX()/scale + lengthOX/scale)*10*scale;
         }
 
     }

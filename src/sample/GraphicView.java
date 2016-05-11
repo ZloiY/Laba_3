@@ -12,8 +12,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 public class GraphicView {
     private TableView<GraphicData> table = new TableView<>();
     private ObservableList<GraphicData> tbl = FXCollections.observableArrayList();
-    TableColumn<GraphicData, String> xClmn = new TableColumn<>("X");
-    TableColumn<GraphicData, String> yClmn = new TableColumn<>("Y");
+    TableColumn<GraphicData, String> xClmn = new TableColumn<>("Number of symbols");
+    TableColumn<GraphicData, String> yClmn = new TableColumn<>("Time");
 
     public TableView<GraphicData> getTable() {
         return table;
@@ -24,6 +24,7 @@ public class GraphicView {
         yClmn.setCellValueFactory(new PropertyValueFactory<>("y"));
         setColumnsRandTbl(data);
         table.setItems(getItems(data));
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         table.getColumns().addAll(xClmn, yClmn);
     }
 

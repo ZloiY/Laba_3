@@ -1,8 +1,6 @@
 package sample;
 
-import com.sun.deploy.panel.ControlPanel;
 import javafx.application.Application;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -14,12 +12,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import oracle.jrockit.jfr.events.EventControl;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
-import java.util.Random;
 
 public class Main extends Application {
 
@@ -32,8 +28,10 @@ public class Main extends Application {
     Group root;
     FileMake file;
     TableView<GraphicData> graphicData;
+    TableView<GraphicData> pageData;
     List<String> fromFileList;
-    List<String> tameplateList;
+    List<String> templateList;
+    SettingWindow pageWindow;
 
     public void start(Stage primaryStage){
         window = primaryStage;
@@ -57,34 +55,39 @@ public class Main extends Application {
         Button startBtn = new Button("Start");
         grid.add(startBtn, 0, 3);
         makeFileBtn.setOnAction(e ->{
-            file = new FileMake(Integer.parseInt(nmbOfSymbolsTF.getText()),
-                    Integer.parseInt(nmbOfRowsTF.getText()));
             fromFileList = new ArrayList<>();
-            fromFileList = file.getFirstList();
+            templateList = new ArrayList<String>();
+            FileMake file = new FileMake();
+            RandomString randomStr = new RandomString();
+            //file = new FileMake(Integer.parseInt(nmbOfSymbolsTF.getText()), Integer.parseInt(nmbOfRowsTF.getText()));
+            for (int nmbrOfRows = 1; nmbrOfRows <= Integer.parseInt(nmbOfSymbolsTF.getText()); nmbrOfRows++){
+                templateList.add(randomStr.getRandString(nmbrOfRows));
+            }
+            fromFileList = file.readFile("graphic.txt");
         });
         startBtn.setOnAction(e ->{
             SearchAlg searchAlg = new SearchAlg();
             graphicData = new TableView<GraphicData>();
-            ComboBox<String> test = new ComboBox<String>();
-            grid.add(test, 1,3);
-            for (int indexOfFile = 0; indexOfFile < fromFileList.size()-1; indexOfFile++){
-                Random rand = new Random();
-                Integer size = fromFileList.size() -1;
-                Integer randint = rand.nextInt(size);
+            for (int indexOfTemplate = 0; indexOfTemplate < templateList.size()-1; indexOfTemplate++) {
                 Long startTime = System.nanoTime();
-                if (searchAlg.getFirstEntry(fromFileList.get(indexOfFile),fromFileList.get(randint)) != -1){
+                if (searchAlg.getFirstEntry(fromFileList.get(0), templateList.get(indexOfTemplate)) != -1) {
                     Long endTime = System.nanoTime();
-                    Long duration = (endTime - startTime)/10000;
-                    Integer ts = fromFileList.get(indexOfFile).length();
-                    graphicData.getItems().add(new GraphicData(ts.doubleValue(),duration.doubleValue()));
+                    Long duration = (endTime - startTime) / 10000;
+                    Integer ts = templateList.get(indexOfTemplate).length();
+                    graphicData.getItems().add(new GraphicData(ts.doubleValue(), duration.doubleValue()));
                 }else{
-                    indexOfFile--;
+                    Integer ts = templateList.get(indexOfTemplate).length();
+                    graphicData.getItems().add(new GraphicData(ts.doubleValue(), 40.0));
                 }
             }
+            //pageData =graphicData;
             graphic = new GraphicView();
             graphic.setTable(graphicData);
             drw.setAxisis(graphic.getTable());
             drw.setGrid();
+            btnLayout.getChildren().add(graphic.getTable());
+            pageWindow = new SettingWindow();
+            btnLayout.getChildren().add(pageWindow.view(graphic.getTable(), 1, 1));
         });
         grid.add(makeFileBtn, 0,2);
 
@@ -95,7 +98,7 @@ public class Main extends Application {
         drw = new GraphicDraw(grafHeight, grafWidth);
         drw.setScale(1.0);
         root.getChildren().addAll(drw.getAxisis(), drw.getGraphic(), drw.getGrid(), drw.getCordinates());
-        btnLayout.getChildren().addAll(grid);
+        btnLayout.getChildren().add(grid);
         drw.getAxisis().toFront();
         drw.getGrid().toBack();
         root.setOnScroll(onScrollEventHandler);

@@ -9,7 +9,7 @@ import java.util.List;
  * Created by ZloiY on 10.05.2016.
  */
 public class FileMake {
-    File file = new File("graphic.txt");
+    File file = new File("template.txt");
     List<String> firstList = new ArrayList<>();
 
     public List<String> getFirstList() {
@@ -17,7 +17,7 @@ public class FileMake {
     }
 
     FileMake(Integer numberOfSymbols, Integer numberOfRows){
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(file, true))){
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("graphic.txt", true))){
             RandomString rndStr = new RandomString();
             for (int curRow = 0; curRow < numberOfRows; curRow++){
                 firstList.add(rndStr.getRandString(numberOfSymbols));
@@ -30,8 +30,11 @@ public class FileMake {
         }
     }
 
-    public List readFile() {
+    FileMake(){}
+
+    public List<String> readFile(String fileName) {
         List<String> allStrings = new ArrayList<>();
+        File file = new File(fileName);
         FileReader fr;
         BufferedReader br;
         try {
