@@ -22,18 +22,21 @@ public class GraphicView {
     public void setTable(TableView<GraphicData> data){
         xClmn.setCellValueFactory(new PropertyValueFactory<>("x"));
         yClmn.setCellValueFactory(new PropertyValueFactory<>("y"));
-        setColumnsRandTbl(data);
         table.setItems(getItems(data));
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         table.getColumns().addAll(xClmn, yClmn);
     }
 
     public ObservableList<GraphicData> getItems(TableView<GraphicData> data){
-        tbl.addAll(data.getItems());
+        tbl.setAll(data.getItems());
         return tbl;
     }
 
-    private void setColumnsRandTbl(TableView<GraphicData> data){
+    public void setItems(){
+        table.setItems(tbl);
+    }
+
+    public void setColumnsRandTbl(TableView<GraphicData> data){
         data.getColumns().addAll(xClmn, yClmn);
     }
 }

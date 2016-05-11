@@ -24,7 +24,6 @@ public class GraphicDraw {
     private Double scale;
     Double deltaX;
     Double deltaY;
-    Double step;
     Double wndHeight;
     Double wndWidth;
     Double rangeOX;
@@ -54,7 +53,7 @@ public class GraphicDraw {
         gcGrid = grid.getGraphicsContext2D();
         gcGrid.setStroke(Color.LIGHTGREY);
         gcGrid.setLineWidth(1);
-        scale = 1.0;
+        scale = 3.0;
     }
 
     public Canvas getAxisis() {
@@ -89,14 +88,7 @@ public class GraphicDraw {
         gcAxisis.fillRect(0, 0, wndWidth, offset);
         gcGraphic.fillRect(wndWidth, 0, offset, wndHeight);
         gcAxisis.setLineWidth(1);
-        if(scale == 1.0){
-            step = 20.0;
-        }else{
-            if (lengthOX/rangeOX/scale < 20.0){
-                step = 20.0 +lengthOX/rangeOX/scale;
-            }
-        }
-        setGraphic(table, scale);
+        setGraphic(table);
         for (double strokesOY = 0.0; strokesOY < (lengthOY+deltaY)/rangeOY*scale; strokesOY++){
             gcAxisis.setLineWidth(3);
             gcAxisis.strokeLine(offset - 10, wndHeight - rangeOY *strokesOY/scale - offset +deltaY, offset + 10, wndHeight - rangeOY *strokesOY/scale - offset +deltaY);
@@ -116,7 +108,7 @@ public class GraphicDraw {
         }
     }
 
-    public void setGraphic(TableView<GraphicData> table, Double scale){
+    public void setGraphic(TableView<GraphicData> table){
         gcGraphic.setStroke(Color.DARKGREEN);
         gcGraphic.setFill(Color.GREEN);
         gcGraphic.setLineWidth(3);
@@ -131,7 +123,7 @@ public class GraphicDraw {
 
     public void zoom(TableView<GraphicData> table){
         gcGraphic.clearRect(0, 0, wndHeight, wndWidth);
-        setGraphic(table, scale);
+        setGraphic(table);
         gcCordinates.clearRect(0, 0, wndWidth, wndHeight);
         gcAxisis.clearRect(0, 0, wndWidth, wndHeight);
         gcGrid.clearRect(0, 0, wndWidth, wndHeight);
@@ -159,9 +151,9 @@ public class GraphicDraw {
 
     public void setRange(TableView<GraphicData> table, Integer lastElem){
         if (table.getItems().get(lastElem).getY() < lengthOY/scale){
-            rangeOY = (table.getItems().get(0).getY()/scale + table.getItems().get(lastElem).getY()/scale)*scale*10;
+            rangeOY = (table.getItems().get(0).getY()/scale + table.getItems().get(lastElem).getY()/scale)*scale;
         }else{
-            rangeOY = (table.getItems().get(0).getY()/scale + lengthOY/scale)*scale*10;
+            rangeOY = (table.getItems().get(0).getY()/scale + lengthOY/scale)*scale;
         }
 
         if (table.getItems().get(lastElem).getX() < lengthOX/scale){

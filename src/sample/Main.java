@@ -28,33 +28,42 @@ public class Main extends Application {
     Group root;
     FileMake file;
     TableView<GraphicData> graphicData;
-    TableView<GraphicData> pageData;
     List<String> fromFileList;
     List<String> templateList;
     SettingWindow pageWindow;
+    Label zoomLbl;
+    SearchAlg searchAlg;
+    VBox btnLayout;
 
     public void start(Stage primaryStage){
         window = primaryStage;
         Scene wndScene;
         HBox mainLayout = new HBox(10);
-        VBox btnLayout = new VBox(10);
+        VBox graphicLayout = new VBox(10);
+        btnLayout = new VBox(10);
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setPadding(new Insets(20, 20, 20, 20));
         grid.setHgap(10);
         grid.setVgap(10);
-        TextField nmbOfRowsTF = new TextField();
+        //TextField nmbOfRowsTF = new TextField();
         TextField nmbOfSymbolsTF = new TextField();
-        Label nmbOfRowsLbl = new Label("Enter number of rows in text file.");
+        //Label nmbOfRowsLbl = new Label("Enter number of rows in text file.");
         Label nmbOfSymbolsLbl = new Label("Enter number of symbols in string.");
+        zoomLbl = new Label();
+        grafHeight = 500.0;
+        grafWidth = 500.0;
+        root = new Group();
+        drw = new GraphicDraw(grafHeight, grafWidth);
+        root.getChildren().addAll(drw.getAxisis(), drw.getGraphic(), drw.getGrid(), drw.getCordinates());
         grid.add(nmbOfSymbolsLbl,0,0);
         grid.add(nmbOfSymbolsTF,0,1);
-        grid.add(nmbOfRowsLbl,1,0);
-        grid.add(nmbOfRowsTF,1,1);
-        Button makeFileBtn = new Button("Create file");
+       // grid.add(nmbOfRowsLbl,1,0);
+        //grid.add(nmbOfRowsTF,1,1);
+        //Button makeFileBtn = new Button("Create file");
         Button startBtn = new Button("Start");
         grid.add(startBtn, 0, 3);
-        makeFileBtn.setOnAction(e ->{
+        startBtn.setOnAction(e ->{
             fromFileList = new ArrayList<>();
             templateList = new ArrayList<String>();
             FileMake file = new FileMake();
@@ -64,40 +73,19 @@ public class Main extends Application {
                 templateList.add(randomStr.getRandString(nmbrOfRows));
             }
             fromFileList = file.readFile("graphic.txt");
-        });
-        startBtn.setOnAction(e ->{
-            SearchAlg searchAlg = new SearchAlg();
-            graphicData = new TableView<GraphicData>();
-            for (int indexOfTemplate = 0; indexOfTemplate < templateList.size()-1; indexOfTemplate++) {
-                Long startTime = System.nanoTime();
-                if (searchAlg.getFirstEntry(fromFileList.get(0), templateList.get(indexOfTemplate)) != -1) {
-                    Long endTime = System.nanoTime();
-                    Long duration = (endTime - startTime) / 10000;
-                    Integer ts = templateList.get(indexOfTemplate).length();
-                    graphicData.getItems().add(new GraphicData(ts.doubleValue(), duration.doubleValue()));
-                }else{
-                    Integer ts = templateList.get(indexOfTemplate).length();
-                    graphicData.getItems().add(new GraphicData(ts.doubleValue(), 40.0));
-                }
-            }
-            //pageData =graphicData;
-            graphic = new GraphicView();
-            graphic.setTable(graphicData);
-            drw.setAxisis(graphic.getTable());
-            drw.setGrid();
-            btnLayout.getChildren().add(graphic.getTable());
-            pageWindow = new SettingWindow();
-            btnLayout.getChildren().add(pageWindow.view(graphic.getTable(), 1, 1));
-        });
-        grid.add(makeFileBtn, 0,2);
+            searchAlg = new SearchAlg();
 
-        root = new Group();
-        grafHeight = 500.0;
-        grafWidth = 500.0;
-        scale = 1.0;
-        drw = new GraphicDraw(grafHeight, grafWidth);
-        drw.setScale(1.0);
-        root.getChildren().addAll(drw.getAxisis(), drw.getGraphic(), drw.getGrid(), drw.getCordinates());
+
+            myThread.setDaemon(true);
+            myThread.run();
+        });
+        //grid.add(makeFileBtn, 0,2);
+
+        scale = 3.0;
+        Double percentScale= roundResult(scale, 100);
+        Double labelScale = percentScale*100;
+        zoomLbl.setText(labelScale.toString() + "%");
+        drw.setScale(3.0);
         btnLayout.getChildren().add(grid);
         drw.getAxisis().toFront();
         drw.getGrid().toBack();
@@ -114,7 +102,8 @@ public class Main extends Application {
             lastMouseLocation.x = mouseEvent.getSceneX();
             lastMouseLocation.y = mouseEvent.getSceneY();
         });
-        mainLayout.getChildren().addAll(root, btnLayout);
+        graphicLayout.getChildren().addAll(root,zoomLbl);
+        mainLayout.getChildren().addAll(graphicLayout, btnLayout);
         window.setTitle("Begin to draw");
         wndScene = new Scene(mainLayout, 800, 600);
         window.setScene(wndScene);
@@ -126,17 +115,63 @@ public class Main extends Application {
         public void handle(ScrollEvent event){
             if (event.isControlDown() && event.getDeltaY() > 0){
                 scale += 0.1;
+                Double percentScale= roundResult(scale, 100);
+                Double labelScale = percentScale*100;
+                zoomLbl.setText(labelScale.toString()+"%");
                 drw.setScale(scale);
                 drw.zoom(graphic.getTable());
             }
             if (event.isControlDown() && event.getDeltaY() < 0 && scale > 0.1){
                 scale -= 0.1;
+                Double percentScale= roundResult(scale, 100);
+                Double labelScale = percentScale*100;
+                zoomLbl.setText(labelScale.toString()+"%");
                 drw.setScale(scale);
                 drw.zoom(graphic.getTable());
             }
 
         }
     };
+
+    private double roundResult (double d, int precise) {
+
+        precise = 10^precise;
+        d = d*precise;
+        int i = (int) Math.round(d);
+        return (double) i/precise;
+
+    }
+
+    Thread myThread = new Thread(new Runnable() {
+
+        public void run() {
+            graphicData = new TableView<GraphicData>();
+            graphic = new GraphicView();
+            graphic.setColumnsRandTbl(graphicData);
+            graphic.setTable(graphicData);
+            btnLayout.getChildren().add(graphic.getTable());
+            pageWindow = new SettingWindow();
+            btnLayout.getChildren().add(pageWindow.view(graphic.getTable(), 1, 1));
+            for (int indexOfTemplate = 0; indexOfTemplate < templateList.size()-1; indexOfTemplate++) {
+                Long startTime = System.nanoTime();
+                if (searchAlg.getFirstEntry(fromFileList.get(0), templateList.get(indexOfTemplate)) != -1) {
+                    Long endTime = System.nanoTime();
+                    Long duration = (endTime - startTime) / 10000;
+                    Integer ts = templateList.get(indexOfTemplate).length();
+                    graphicData.getItems().add(new GraphicData(ts.doubleValue(), duration.doubleValue()));
+                }else{
+                    Integer ts = templateList.get(indexOfTemplate).length();
+                    graphicData.getItems().add(new GraphicData(ts.doubleValue(), 80.0));
+                }
+                graphic.getItems(graphicData);
+                graphic.setItems();
+                drw.setDelta(0.0,0.0,graphic.getTable());
+                try{
+                    Thread.sleep(100);
+                }catch(InterruptedException e){}
+            }
+        }
+    });
 
     public static void main(String[] args) {
         launch(args);
