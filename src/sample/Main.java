@@ -8,9 +8,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -18,7 +16,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import oracle.jrockit.jfr.events.EventControl;
 
+import java.util.ArrayList;
 import java.util.EventListener;
+import java.util.List;
+import java.util.Random;
 
 public class Main extends Application {
 
@@ -30,6 +31,9 @@ public class Main extends Application {
     GraphicView graphic;
     Group root;
     FileMake file;
+    TableView<GraphicData> graphicData;
+    List<String> fromFileList;
+    List<String> tameplateList;
 
     public void start(Stage primaryStage){
         window = primaryStage;
@@ -50,21 +54,46 @@ public class Main extends Application {
         grid.add(nmbOfRowsLbl,1,0);
         grid.add(nmbOfRowsTF,1,1);
         Button makeFileBtn = new Button("Create file");
+        Button startBtn = new Button("Start");
+        grid.add(startBtn, 0, 3);
         makeFileBtn.setOnAction(e ->{
             file = new FileMake(Integer.parseInt(nmbOfSymbolsTF.getText()),
                     Integer.parseInt(nmbOfRowsTF.getText()));
+            fromFileList = new ArrayList<>();
+            fromFileList = file.getFirstList();
+        });
+        startBtn.setOnAction(e ->{
+            SearchAlg searchAlg = new SearchAlg();
+            graphicData = new TableView<GraphicData>();
+            ComboBox<String> test = new ComboBox<String>();
+            grid.add(test, 1,3);
+            for (int indexOfFile = 0; indexOfFile < fromFileList.size()-1; indexOfFile++){
+                Random rand = new Random();
+                Integer size = fromFileList.size() -1;
+                Integer randint = rand.nextInt(size);
+                Long startTime = System.nanoTime();
+                if (searchAlg.getFirstEntry(fromFileList.get(indexOfFile),fromFileList.get(randint)) != -1){
+                    Long endTime = System.nanoTime();
+                    Long duration = (endTime - startTime)/10000;
+                    Integer ts = fromFileList.get(indexOfFile).length();
+                    graphicData.getItems().add(new GraphicData(ts.doubleValue(),duration.doubleValue()));
+                }else{
+                    indexOfFile--;
+                }
+            }
+            graphic = new GraphicView();
+            graphic.setTable(graphicData);
+            drw.setAxisis(graphic.getTable());
+            drw.setGrid();
         });
         grid.add(makeFileBtn, 0,2);
-        graphic = new GraphicView();
-        graphic.setTable();
+
         root = new Group();
-        grafHeight = 350.0;
-        grafWidth = 350.0;
+        grafHeight = 500.0;
+        grafWidth = 500.0;
         scale = 1.0;
         drw = new GraphicDraw(grafHeight, grafWidth);
         drw.setScale(1.0);
-        drw.setAxisis(graphic.getTable());
-        drw.setGrid();
         root.getChildren().addAll(drw.getAxisis(), drw.getGraphic(), drw.getGrid(), drw.getCordinates());
         btnLayout.getChildren().addAll(grid);
         drw.getAxisis().toFront();

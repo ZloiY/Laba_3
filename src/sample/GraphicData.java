@@ -12,6 +12,8 @@ public class GraphicData {
         this.y = y;
     }
 
+    public GraphicData(){}
+
     public Double getX() {
         return x;
     }

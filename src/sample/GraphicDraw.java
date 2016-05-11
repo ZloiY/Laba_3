@@ -158,15 +158,15 @@ public class GraphicDraw {
 
     public void setRange(TableView<GraphicData> table, Integer lastElem){
         if (table.getItems().get(lastElem).getY() < lengthOY/scale){
-            rangeOY = (table.getItems().get(0).getY()+deltaY/scale + table.getItems().get(lastElem).getY()/scale)/5*scale;
+            rangeOY = (table.getItems().get(0).getY()+deltaY/scale + table.getItems().get(lastElem).getY()/scale)*scale*5;
         }else{
-            rangeOY = (table.getItems().get(0).getY()/scale + lengthOY/scale)/5*scale;
+            rangeOY = (table.getItems().get(0).getY()/scale + lengthOY/scale)*scale*5;
         }
 
         if (table.getItems().get(lastElem).getX() < lengthOX/scale){
-            rangeOX = (table.getItems().get(0).getX()/scale + table.getItems().get(lastElem).getX()/scale)/5*scale;
+            rangeOX = (table.getItems().get(0).getX()/scale + table.getItems().get(lastElem).getX()/scale)*scale;
         }else{
-            rangeOX = (table.getItems().get(0).getX()/scale + lengthOX/scale)/5*scale;
+            rangeOX = (table.getItems().get(0).getX()/scale + lengthOX/scale)*scale;
         }
 
     }

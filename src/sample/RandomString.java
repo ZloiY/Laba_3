@@ -13,11 +13,10 @@ public class RandomString {
     public String getRandString(Integer size){
         str = new StringBuilder();
         rnd = new Random();
-        while (str.length() < (int)(rnd.nextFloat()*size)){
+        while (str.length() < rnd.nextInt(size)+1){
             int index = (int)(rnd.nextFloat()*chars.length());
             str.append(chars.charAt(index));
         }
-        String resultStr = str.toString();
-        return resultStr;
+        return str.toString();
     }
 }
