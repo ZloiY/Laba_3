@@ -13,7 +13,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class Main extends Application {
     GraphicView graphic;
     Group root;
     FileMake file;
-    TableView<GraphicData> graphicData;
+    TableView<Dot> graphicData;
     List<String> fromFileList;
     List<String> templateList;
     SettingWindow pageWindow;
@@ -61,6 +60,14 @@ public class Main extends Application {
        // grid.add(nmbOfRowsLbl,1,0);
         //grid.add(nmbOfRowsTF,1,1);
         //Button makeFileBtn = new Button("Create file");
+        graphicData = new TableView<Dot>();
+        graphic = new GraphicView();
+        graphic.setColumnsRandTbl(graphicData);
+        graphic.setTable(graphicData);
+        drw.setDelta(0d,0d,graphic.getTable());
+        btnLayout.getChildren().add(graphic.getTable());
+        pageWindow = new SettingWindow();
+        btnLayout.getChildren().add(pageWindow.view(graphic.getTable(), 1, 1));
         Button startBtn = new Button("Start");
         grid.add(startBtn, 0, 3);
         startBtn.setOnAction(e ->{
@@ -74,13 +81,9 @@ public class Main extends Application {
             }
             fromFileList = file.readFile("graphic.txt");
             searchAlg = new SearchAlg();
-
-
-            myThread.setDaemon(true);
-            myThread.run();
+            myThread.start();
         });
         //grid.add(makeFileBtn, 0,2);
-
         scale = 3.0;
         Double percentScale= roundResult(scale, 100);
         Double labelScale = percentScale*100;
@@ -145,29 +148,22 @@ public class Main extends Application {
     Thread myThread = new Thread(new Runnable() {
 
         public void run() {
-            graphicData = new TableView<GraphicData>();
-            graphic = new GraphicView();
-            graphic.setColumnsRandTbl(graphicData);
-            graphic.setTable(graphicData);
-            btnLayout.getChildren().add(graphic.getTable());
-            pageWindow = new SettingWindow();
-            btnLayout.getChildren().add(pageWindow.view(graphic.getTable(), 1, 1));
             for (int indexOfTemplate = 0; indexOfTemplate < templateList.size()-1; indexOfTemplate++) {
                 Long startTime = System.nanoTime();
                 if (searchAlg.getFirstEntry(fromFileList.get(0), templateList.get(indexOfTemplate)) != -1) {
                     Long endTime = System.nanoTime();
                     Long duration = (endTime - startTime) / 10000;
                     Integer ts = templateList.get(indexOfTemplate).length();
-                    graphicData.getItems().add(new GraphicData(ts.doubleValue(), duration.doubleValue()));
+                    graphicData.getItems().add(new Dot(ts.doubleValue(), duration.doubleValue()));
                 }else{
                     Integer ts = templateList.get(indexOfTemplate).length();
-                    graphicData.getItems().add(new GraphicData(ts.doubleValue(), 80.0));
+                    graphicData.getItems().add(new Dot(ts.doubleValue(), 80.0));
                 }
                 graphic.getItems(graphicData);
                 graphic.setItems();
-                drw.setDelta(0.0,0.0,graphic.getTable());
+                drw.setDelta(0.0, 0.0, graphic.getTable());
                 try{
-                    Thread.sleep(100);
+                    Thread.sleep(500);
                 }catch(InterruptedException e){}
             }
         }

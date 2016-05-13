@@ -10,16 +10,16 @@ import javafx.scene.control.cell.PropertyValueFactory;
  * Created by ZloiY on 27.04.2016.
  */
 public class GraphicView {
-    private TableView<GraphicData> table = new TableView<>();
-    private ObservableList<GraphicData> tbl = FXCollections.observableArrayList();
-    TableColumn<GraphicData, String> xClmn = new TableColumn<>("Number of symbols");
-    TableColumn<GraphicData, String> yClmn = new TableColumn<>("Time");
+    private TableView<Dot> table = new TableView<>();
+    private ObservableList<Dot> tbl = FXCollections.observableArrayList();
+    TableColumn<Dot, String> xClmn = new TableColumn<>("Number of symbols");
+    TableColumn<Dot, String> yClmn = new TableColumn<>("Time");
 
-    public TableView<GraphicData> getTable() {
+    public TableView<Dot> getTable() {
         return table;
     }
 
-    public void setTable(TableView<GraphicData> data){
+    public void setTable(TableView<Dot> data){
         xClmn.setCellValueFactory(new PropertyValueFactory<>("x"));
         yClmn.setCellValueFactory(new PropertyValueFactory<>("y"));
         table.setItems(getItems(data));
@@ -27,7 +27,7 @@ public class GraphicView {
         table.getColumns().addAll(xClmn, yClmn);
     }
 
-    public ObservableList<GraphicData> getItems(TableView<GraphicData> data){
+    public ObservableList<Dot> getItems(TableView<Dot> data){
         tbl.setAll(data.getItems());
         return tbl;
     }
@@ -36,7 +36,7 @@ public class GraphicView {
         table.setItems(tbl);
     }
 
-    public void setColumnsRandTbl(TableView<GraphicData> data){
+    public void setColumnsRandTbl(TableView<Dot> data){
         data.getColumns().addAll(xClmn, yClmn);
     }
 }

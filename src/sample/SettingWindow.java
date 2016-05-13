@@ -2,14 +2,10 @@ package sample;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
 
 /**
  * Created by NoRFolf on 05.04.2016.
@@ -17,16 +13,16 @@ import javafx.stage.Stage;
 public class SettingWindow {
 
     public Integer allPages = 1;
-    public ObservableList<GraphicData> curPage;
-    public TableView<GraphicData> allData = new TableView<>();
+    public ObservableList<Dot> curPage;
+    public TableView<Dot> allData = new TableView<>();
 
-    public void setAllData(TableView<GraphicData> table){
+    public void setAllData(TableView<Dot> table){
         allData.setItems(table.getItems());
     }
 
     public Integer getAllPages(){return allPages;}
 
-    public void action(TableView<GraphicData> table, Double numrows, Integer numPages){
+    public void action(TableView<Dot> table, Double numrows, Integer numPages){
         table.setFixedCellSize(table.getHeight() / numrows);
         table.setMaxHeight(Math.ceil(table.getFixedCellSize()
                 * numrows));
@@ -35,7 +31,7 @@ public class SettingWindow {
         pages(table, numPages, numrows.intValue());
     }
 
-    public void pages(TableView<GraphicData> mainTable, Integer numPages, Integer numrows){
+    public void pages(TableView<Dot> mainTable, Integer numPages, Integer numrows){
         allPages = mainTable.getItems().size() / numrows;
         curPage = FXCollections.observableArrayList();
         Integer i = numPages;
@@ -61,7 +57,7 @@ public class SettingWindow {
         }
     }
 
-    public void firstPage(TableView<GraphicData> mainTable,  Integer numrows){
+    public void firstPage(TableView<Dot> mainTable,  Integer numrows){
         mainTable.setItems(allData.getItems());
         curPage.clear();
         for(int i = 1; i-1 < numrows; i++){
@@ -70,7 +66,7 @@ public class SettingWindow {
         mainTable.setItems(curPage);
     }
 
-    public void lastPage(TableView<GraphicData> mainTable,  Integer numrows){
+    public void lastPage(TableView<Dot> mainTable,  Integer numrows){
         mainTable.setItems(allData.getItems());
         for (int a = 1; a < mainTable.getItems().size(); a++){
             curPage.clear();
@@ -87,7 +83,7 @@ public class SettingWindow {
         }
     }
 
-    public GridPane view(TableView<GraphicData> mainTable, Integer currPageIndex, Integer allPgs){
+    public GridPane view(TableView<Dot> mainTable, Integer currPageIndex, Integer allPgs){
         GridPane mainLayout = new GridPane();
         HBox pgsBox = new HBox(10);
         HBox nextPrevBox = new HBox(10);

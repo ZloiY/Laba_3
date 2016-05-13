@@ -24,7 +24,6 @@ public class FileMake {
                 bw.write(firstList.get(curRow));
                 bw.newLine();
             }
-
         }catch (IOException e){
             e.printStackTrace();
         }

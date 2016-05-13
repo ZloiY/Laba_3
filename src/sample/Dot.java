@@ -3,16 +3,16 @@ package sample;
 /**
  * Created by ZloiY on 27.04.2016.
  */
-public class GraphicData {
+public class Dot {
     private Double x;
     private Double y;
 
-    public GraphicData(Double x, Double y) {
+    public Dot(Double x, Double y) {
         this.x = x;
         this.y = y;
     }
 
-    public GraphicData(){}
+    public Dot(){}
 
     public Double getX() {
         return x;
