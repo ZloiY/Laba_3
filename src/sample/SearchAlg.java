@@ -1,6 +1,7 @@
 package sample;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by ZloiY on 10.05.2016.
@@ -13,7 +14,7 @@ public class SearchAlg {
         if(tmpLen > sourceLen){
             return -1;
         }
-        HashMap<Character, Integer> offsetTable = new HashMap<>();
+        Map<Character, Integer> offsetTable = new HashMap<>();
         for (int index = 0; index <= 255; index++) {
             offsetTable.put((char) index, tmpLen);
         }
